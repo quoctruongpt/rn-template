@@ -8,17 +8,23 @@
 import {AppNavigation} from '@/navigation/AppNavigation';
 import {persistor, store} from '@/store';
 import {NavigationContainer} from '@react-navigation/native';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import React from 'react';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
+import '@/configs/themes/unitstyles';
+
+const queryClient = new QueryClient();
 
 function App(): React.JSX.Element {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <NavigationContainer>
-          <AppNavigation />
-        </NavigationContainer>
+        <QueryClientProvider client={queryClient}>
+          <NavigationContainer>
+            <AppNavigation />
+          </NavigationContainer>
+        </QueryClientProvider>
       </PersistGate>
     </Provider>
   );
