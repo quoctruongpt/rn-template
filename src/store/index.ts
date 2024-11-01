@@ -1,14 +1,26 @@
 import {configureStore} from '@reduxjs/toolkit';
 import rootReducer from './slices';
+import {reduxPersistStorage} from '@/storage';
+import {persistReducer, persistStore} from 'redux-persist';
+
+const persistConfig = {
+  key: 'root',
+  storage: reduxPersistStorage,
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: persistedReducer,
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      },
+    }),
 });
 
-export default store;
+// Khởi tạo persistor
+const persistor = persistStore(store);
 
-// Infer the `RootState`,  `AppDispatch`, and `AppStore` types from the store itself
-export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = typeof store.dispatch;
-export type AppStore = typeof store;
+export {store, persistor};
